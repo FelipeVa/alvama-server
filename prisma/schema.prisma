@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Result {
+  id          Int     @id @default(autoincrement())
+
+  dataset     Dataset @relation(fields: [datasetId], references: [id])
+  datasetId   Int
+  created_at   DateTime  @default(now())
+
+  @@map("results")
+}
+
+model Dataset {
+  id          Int       @id @default(autoincrement())
+  name        String
+  routes      Json
+  buses       Json
+  Result      Result[]
+  created_at   DateTime  @default(now())
+
+  @@map("datasets")
+}
