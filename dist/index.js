@@ -13,9 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const express_validator_1 = require("express-validator");
 const services_1 = require("./services");
-const storeDataset_request_1 = require("./http/requests/storeDataset.request");
+const requests_1 = require("./http/requests");
+const common_1 = require("./utils/common");
 const app = (0, express_1.default)();
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -29,32 +29,72 @@ dotenv.config();
 app.use(cors());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
-function validate(req, res, next) {
-    const errors = (0, express_validator_1.validationResult)(req);
-    if (errors.isEmpty()) {
-        return next();
-    }
-    const extractedErrors = [];
-    errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
-    return res.status(422).json({
-        errors: extractedErrors,
-    });
-}
-/**
- * Services
- */
 /**
  * App routes
  */
 app.get('/', (req, res) => {
     res.send('Express + TypeScript Server');
 });
-app.post('/alvama', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield services_1.alvamaService.store(req.body);
+/**
+ * Dataset
+ */
+app.get('/datasets', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.datasetService.index();
     res.json(response);
 }));
-app.post('/datasets', storeDataset_request_1.storeDatasetRequest, validate, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/datasets', (0, common_1.withRequestValidator)(requests_1.storeDatasetRequest), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield services_1.datasetService.store(req.body);
+    res.json(response);
+}));
+app.get('/datasets/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.datasetService.show(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Dataset not found',
+        });
+    }
+    res.json(response);
+}));
+app.delete('/datasets/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.datasetService.destroy(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Dataset not found',
+        });
+    }
+    res.json(response);
+}));
+/**
+ * Results
+ */
+app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.resultService.index();
+    res.json(response);
+}));
+app.get('/results/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.resultService.show(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Result not found',
+        });
+    }
+    res.json(response);
+}));
+/**
+ * Executions
+ */
+app.get('/executions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.executionService.index();
+    res.json(response);
+}));
+app.post('/executions', (0, common_1.withRequestValidator)(requests_1.storeExecutionRequest), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const dataset = yield services_1.datasetService.show(req.body.dataset_id);
+    if (!dataset) {
+        return res.status(404).json({
+            message: 'Dataset not found',
+        });
+    }
+    const response = yield services_1.executionService.store(req.body);
     res.json(response);
 }));
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {

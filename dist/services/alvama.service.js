@@ -11,10 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.alvamaService = void 0;
 const common_1 = require("../utils/common");
+const dataset_service_1 = require("./dataset.service");
 const service = () => {
-    const store = (dataset) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield (0, common_1.runCommand)('/Users/pipee/.pyenv/versions/3.10.4/bin/python3', [
-            '/Users/pipee/Code/alvama/main.py',
+    const store = (datasetId) => __awaiter(void 0, void 0, void 0, function* () {
+        const dataset = yield dataset_service_1.datasetService.showForAlvama(datasetId);
+        return yield (0, common_1.runCommand)(process.env.PYTHON_VENV_PATH, [
+            process.env.PYTHON_ENTRY_POINT,
             `${JSON.stringify(dataset)}`,
         ]);
     });

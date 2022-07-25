@@ -10,23 +10,98 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Result {
-  id          Int     @id @default(autoincrement())
+model Dataset {
+  id         Int         @id @default(autoincrement())
+  name       String
+  routes     Route[]
+  buses      Bus[]
+  results    Result[]    @relation(name: "dataset_results")
+  executions Execution[] @relation(name: "dataset_executions")
+  created_at DateTime    @default(now())
 
-  dataset     Dataset @relation(fields: [datasetId], references: [id])
-  datasetId   Int
-  created_at   DateTime  @default(now())
+  @@map("datasets")
+}
+
+model Execution {
+  id         Int      @id @default(autoincrement())
+  dataset    Dataset  @relation(name: "dataset_executions", fields: [dataset_id], references: [id])
+  dataset_id Int
+  result     Result   @relation(name: "execution_result", fields: [result_id], references: [id])
+  result_id  Int      @unique
+  name       String
+  created_at DateTime @default(now())
+
+  @@map("executions")
+}
+
+model Route {
+  id           Int          @id @default(autoincrement())
+  dataset      Dataset      @relation(fields: [dataset_id], references: [id])
+  dataset_id   Int
+  name         String
+  length       Int
+  demand       Int
+  cycle_time   Int
+  result_items ResultItem[] @relation(name: "route_result_items")
+  created_at   DateTime     @default(now())
+
+  @@map("routes")
+}
+
+model Bus {
+  id           Int           @id @default(autoincrement())
+  dataset      Dataset       @relation(fields: [dataset_id], references: [id])
+  dataset_id   Int
+  name         String
+  cost_per_km  Float         @default(0)
+  capacities   BusCapacity[]
+  result_items ResultItem[]  @relation(name: "bus_result_items")
+  created_at   DateTime      @default(now())
+
+  @@map("buses")
+}
+
+model BusCapacity {
+  id           Int          @id @default(autoincrement())
+  bus          Bus          @relation(fields: [bus_id], references: [id])
+  bus_id       Int
+  name         String
+  capacity     Int          @default(0)
+  available    Int          @default(0)
+  result_items ResultItem[] @relation(name: "bus_capacity_result_items")
+  created_at   DateTime     @default(now())
+
+  @@map("bus_capacities")
+}
+
+model Result {
+  id           Int          @id @default(autoincrement())
+  dataset      Dataset      @relation(name: "dataset_results", fields: [dataset_id], references: [id])
+  dataset_id   Int
+  execution    Execution?   @relation(name: "execution_result")
+  result_items ResultItem[]
+  status       String
+  objective    Float        @default(0)
+  time         Float        @default(0)
+  created_at   DateTime     @default(now())
 
   @@map("results")
 }
 
-model Dataset {
-  id          Int       @id @default(autoincrement())
-  name        String
-  routes      Json
-  buses       Json
-  Result      Result[]
-  created_at   DateTime  @default(now())
+model ResultItem {
+  id              Int         @id @default(autoincrement())
+  result          Result      @relation(fields: [result_id], references: [id])
+  result_id       Int
+  bus             Bus         @relation(name: "bus_result_items", fields: [bus_id], references: [id])
+  bus_id          Int
+  route           Route       @relation(name: "route_result_items", fields: [route_id], references: [id])
+  route_id        Int
+  capacity        BusCapacity @relation(name: "bus_capacity_result_items", fields: [bus_capacity_id], references: [id])
+  bus_capacity_id Int
+  value           String      @default("0")
+  created_at      DateTime    @default(now())
 
-  @@map("datasets")
+  @@map("result_items")
 }
+
+// De los cuales el % de las citaciones realizadas por los autores, corresponden a X, Y,Z e ir concluyendo

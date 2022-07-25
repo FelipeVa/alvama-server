@@ -8,6 +8,8 @@ declare global {
       DATABASE_NAME: string;
       DATABASE_HOST: string;
       DATABASE_PORT: string;
+      PYTHON_VENV_PATH: string;
+      PYTHON_ENTRY_POINT: string;
     }
   }
 }

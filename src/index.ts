@@ -1,7 +1,7 @@
-import express, { Express, NextFunction, Request, Response } from 'express';
-import { validationResult } from 'express-validator';
-import { datasetService, alvamaService } from './services';
-import { storeDatasetRequest } from './http/requests/storeDataset.request';
+import express, { Express, Request, Response } from 'express';
+import { datasetService, executionService, resultService } from './services';
+import { storeDatasetRequest, storeExecutionRequest } from './http/requests';
+import { withRequestValidator } from './utils/common';
 
 const app: Express = express();
 const cors = require('cors');
@@ -19,23 +19,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-function validate(req: Request, res: Response, next: NextFunction) {
-  const errors = validationResult(req);
-
-  if (errors.isEmpty()) {
-    return next();
-  }
-  const extractedErrors: Record<string, string>[] = [];
-  errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
-
-  return res.status(422).json({
-    errors: extractedErrors,
-  });
-}
-
-/**
- * Services
- */
 /**
  * App routes
  */
@@ -43,18 +26,92 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
 
-app.post('/alvama', async (req: Request, res: Response) => {
-  const response = await alvamaService.store(req.body);
+/**
+ * Dataset
+ */
+app.get('/datasets', async (req: Request, res: Response) => {
+  const response = await datasetService.index();
 
   res.json(response);
 });
 
 app.post(
   '/datasets',
-  storeDatasetRequest,
-  validate,
+  withRequestValidator(storeDatasetRequest),
   async (req: Request, res: Response) => {
     const response = await datasetService.store(req.body);
+
+    res.json(response);
+  },
+);
+
+app.get('/datasets/:id', async (req: Request, res: Response) => {
+  const response = await datasetService.show(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Dataset not found',
+    });
+  }
+
+  res.json(response);
+});
+
+app.delete('/datasets/:id', async (req: Request, res: Response) => {
+  const response = await datasetService.destroy(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Dataset not found',
+    });
+  }
+
+  res.json(response);
+});
+
+/**
+ * Results
+ */
+app.get('/results', async (req: Request, res: Response) => {
+  const response = await resultService.index();
+
+  res.json(response);
+});
+
+app.get('/results/:id', async (req: Request, res: Response) => {
+  const response = await resultService.show(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Result not found',
+    });
+  }
+
+  res.json(response);
+});
+
+/**
+ * Executions
+ */
+app.get('/executions', async (req: Request, res: Response) => {
+  const response = await executionService.index();
+
+  res.json(response);
+});
+
+app.post(
+  '/executions',
+  withRequestValidator(storeExecutionRequest),
+  async (req: Request, res: Response) => {
+    const dataset = await datasetService.show(req.body.dataset_id);
+
+    if (!dataset) {
+      return res.status(404).json({
+        message: 'Dataset not found',
+      });
+    }
+
+    const response = await executionService.store(req.body);
 
     res.json(response);
   },

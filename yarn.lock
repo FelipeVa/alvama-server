@@ -69,6 +69,20 @@
   resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-4.1.0.tgz#da8002d4b75c92e3fd564ba5b0bd04847ffb3c4c"
   integrity sha512-quqHXD3P83NBLVtRlts4SgKHmqgA8GMiyDTJ7af03Wg0gl6F5t65mBYvIuwmD+52vHm42JtIsp/fAO9YIV0JBA==
 
+"@tanstack/query-core@^4.0.0-beta.1":
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.0.8.tgz#75f350817936e13ba68b5bf605dce141a26dd4ad"
+  integrity sha512-NTjRc/qWlUx+76NCYiwqTYfJw2xIzSilI5w/F1QzE140dNUBlUl+72CbX0cIdJuTYGOD0W9x5xqZ+JcNAOIJ1A==
+
+"@tanstack/react-query@^4.0.8":
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.0.8.tgz#4f64f9e64d3aca28a5c3845baa7555d2c8f535a0"
+  integrity sha512-BC7lWRG1ulla6HrPYgu5EeTemNLpUDRJCuWDIGeDo5eeiD5sVB9ccd4ICR///Vaj9YMCmbNZpQlLgm1OaaovWg==
+  dependencies:
+    "@tanstack/query-core" "^4.0.0-beta.1"
+    "@types/use-sync-external-store" "^0.0.3"
+    use-sync-external-store "^1.2.0"
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -135,6 +149,11 @@
   dependencies:
     "@types/mime" "^1"
     "@types/node" "*"
+
+"@types/use-sync-external-store@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@types/use-sync-external-store/-/use-sync-external-store-0.0.3.tgz#b6725d5f4af24ace33b36fafd295136e75509f43"
+  integrity sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==
 
 "@typescript-eslint/eslint-plugin@^5.30.7":
   version "5.30.7"
@@ -1574,6 +1593,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-sync-external-store@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
+  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
 
 utils-merge@1.0.1:
   version "1.0.1"
