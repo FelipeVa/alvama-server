@@ -8,6 +8,7 @@ const service = () => {
 
     return await runCommand(process.env.PYTHON_VENV_PATH, [
       process.env.PYTHON_ENTRY_POINT,
+      'alvama',
       `${JSON.stringify(dataset)}`,
     ]);
   };
