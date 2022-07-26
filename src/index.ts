@@ -115,7 +115,7 @@ app.post(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: 'Something went wrong' });
     }
   },
 );
@@ -125,3 +125,5 @@ app.listen(process.env.EXPRESS_SERVER_PORT, () => {
     `⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`,
   );
 });
+
+

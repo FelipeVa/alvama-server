@@ -15,8 +15,7 @@ const dataset_service_1 = require("./dataset.service");
 const service = () => {
     const store = (datasetId) => __awaiter(void 0, void 0, void 0, function* () {
         const dataset = yield dataset_service_1.datasetService.showForAlvama(datasetId);
-        return yield (0, common_1.runCommand)(process.env.PYTHON_VENV_PATH, [
-            process.env.PYTHON_ENTRY_POINT,
+        return yield (0, common_1.runCommand)(process.env.ALVAMA_BINARY, [
             'alvama',
             `${JSON.stringify(dataset)}`,
         ]);

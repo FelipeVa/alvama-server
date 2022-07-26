@@ -99,7 +99,7 @@ app.post('/executions', (0, common_1.withRequestValidator)(requests_1.storeExecu
         res.json(response);
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Something went wrong' });
     }
 }));
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {

@@ -6,7 +6,7 @@ const express_validator_1 = require("express-validator");
 const runCommand = (command, args) => new Promise((resolve, reject) => {
     const py = (0, child_process_1.spawn)(command, args);
     py.stderr.on('data', (data) => {
-        reject(data);
+        reject(data.toString());
     });
     py.stdout.on('data', (data) => {
         resolve(JSON.parse(data.toString()));

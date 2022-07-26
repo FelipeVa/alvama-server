@@ -7,7 +7,7 @@ export const runCommand = <T>(command: string, args: string[]): Promise<T> =>
     const py = spawn(command, args);
 
     py.stderr.on('data', (data: string) => {
-      reject(data);
+      reject(data.toString());
     });
 
     py.stdout.on('data', (data: string) => {

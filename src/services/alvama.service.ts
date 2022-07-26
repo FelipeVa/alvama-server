@@ -6,8 +6,7 @@ const service = () => {
   const store = async (datasetId: string): Promise<AlvamaType> => {
     const dataset = await datasetService.showForAlvama(datasetId);
 
-    return await runCommand(process.env.PYTHON_VENV_PATH, [
-      process.env.PYTHON_ENTRY_POINT,
+    return await runCommand(process.env.ALVAMA_BINARY, [
       'alvama',
       `${JSON.stringify(dataset)}`,
     ]);

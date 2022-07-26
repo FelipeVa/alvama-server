@@ -10,6 +10,7 @@ declare global {
       DATABASE_PORT: string;
       PYTHON_VENV_PATH: string;
       PYTHON_ENTRY_POINT: string;
+      ALVAMA_BINARY: string;
     }
   }
 }
