@@ -4,14 +4,8 @@ export type AlvamaType = {
   time: number;
   results: {
     amount: string;
-    bus: {
-      id: string;
-    };
-    route: {
-      id: string;
-    };
-    capacity: {
-      id: string;
-    };
+    bus_id: string;
+    route_id: string;
+    capacity_id: string;
   }[];
 };

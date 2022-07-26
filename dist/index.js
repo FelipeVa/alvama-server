@@ -28,7 +28,7 @@ dotenv.config();
  */
 app.use(cors());
 app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.urlencoded({ extended: false, limit: '1000kb' }));
 /**
  * App routes
  */
@@ -94,8 +94,13 @@ app.post('/executions', (0, common_1.withRequestValidator)(requests_1.storeExecu
             message: 'Dataset not found',
         });
     }
-    const response = yield services_1.executionService.store(req.body);
-    res.json(response);
+    try {
+        const response = yield services_1.executionService.store(req.body);
+        res.json(response);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }));
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`);

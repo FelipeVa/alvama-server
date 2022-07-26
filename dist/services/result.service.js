@@ -36,7 +36,11 @@ const service = () => {
             },
             include: {
                 execution: true,
-                dataset: true,
+                dataset: {
+                    include: {
+                        buses: true,
+                    },
+                },
                 result_items: {
                     include: {
                         bus: true,
@@ -57,9 +61,9 @@ const service = () => {
                 result_items: {
                     create: results.results.map(result_item => ({
                         value: String(result_item.amount),
-                        bus_id: parseInt(result_item.bus.id),
-                        route_id: parseInt(result_item.route.id),
-                        bus_capacity_id: parseInt(result_item.capacity.id),
+                        bus_id: parseInt(result_item.bus_id),
+                        route_id: parseInt(result_item.route_id),
+                        bus_capacity_id: parseInt(result_item.capacity_id),
                     })),
                 },
             },

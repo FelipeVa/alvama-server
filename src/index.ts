@@ -17,7 +17,7 @@ dotenv.config();
  */
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: '1000kb' }));
 
 /**
  * App routes
@@ -110,10 +110,13 @@ app.post(
         message: 'Dataset not found',
       });
     }
+    try {
+      const response = await executionService.store(req.body);
 
-    const response = await executionService.store(req.body);
-
-    res.json(response);
+      res.json(response);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   },
 );
 
