@@ -15,7 +15,7 @@ const result_service_1 = require("./result.service");
 const alvama_service_1 = require("./alvama.service");
 const service = () => {
     const index = () => __awaiter(void 0, void 0, void 0, function* () {
-        return yield prisma_1.prisma.execution.findMany({
+        return yield prisma_1.prisma.datasetExecution.findMany({
             orderBy: {
                 created_at: 'desc',
             },
@@ -28,7 +28,7 @@ const service = () => {
     const store = ({ dataset_id, name }) => __awaiter(void 0, void 0, void 0, function* () {
         const alvama = yield alvama_service_1.alvamaService.store(dataset_id);
         const result = yield result_service_1.resultService.store(dataset_id, alvama);
-        return yield prisma_1.prisma.execution.create({
+        return yield prisma_1.prisma.datasetExecution.create({
             data: {
                 name,
                 dataset_id: parseInt(dataset_id),

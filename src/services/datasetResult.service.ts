@@ -3,7 +3,7 @@ import { AlvamaType } from '../types/alvama.type';
 
 const service = () => {
   const index = async () => {
-    return await prisma.result.findMany({
+    return await prisma.datasetResult.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -21,7 +21,7 @@ const service = () => {
   };
 
   const show = async (id: string) => {
-    return await prisma.result.findUnique({
+    return await prisma.datasetResult.findUnique({
       where: {
         id: parseInt(id),
       },
@@ -44,7 +44,7 @@ const service = () => {
   };
 
   const store = async (datasetId: string, results: AlvamaType) => {
-    return await prisma.result.create({
+    return await prisma.datasetResult.create({
       data: {
         dataset_id: parseInt(datasetId),
         objective: results.objective,
@@ -68,4 +68,4 @@ const service = () => {
   return { store, index, show };
 };
 
-export const resultService = service();
+export const datasetResultService = service();

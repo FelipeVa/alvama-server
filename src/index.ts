@@ -1,5 +1,10 @@
 import express, { Express, Request, Response } from 'express';
-import { datasetService, executionService, resultService } from './services';
+import {
+  datasetService,
+  datasetExecutionService,
+  datasetResultService,
+  forecastService,
+} from './services';
 import { storeDatasetRequest, storeExecutionRequest } from './http/requests';
 import { withRequestValidator } from './utils/common';
 
@@ -45,6 +50,60 @@ app.post(
   },
 );
 
+/**
+ * Dataset Results
+ */
+app.get('/datasets/results', async (req: Request, res: Response) => {
+  const response = await datasetResultService.index();
+
+  res.json(response);
+});
+
+app.get('/datasets/results/:id', async (req: Request, res: Response) => {
+  const response = await datasetResultService.show(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Result not found',
+    });
+  }
+
+  res.json(response);
+});
+
+/**
+ * Dataset Executions
+ */
+app.get('/datasets/executions', async (req: Request, res: Response) => {
+  const response = await datasetExecutionService.index();
+
+  res.json(response);
+});
+
+app.post(
+  '/datasets/executions',
+  withRequestValidator(storeExecutionRequest),
+  async (req: Request, res: Response) => {
+    const dataset = await datasetService.show(req.body.dataset_id);
+
+    if (!dataset) {
+      return res.status(404).json({
+        message: 'Dataset not found',
+      });
+    }
+    try {
+      const response = await datasetExecutionService.store(req.body);
+
+      res.json(response);
+    } catch (error) {
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  },
+);
+
+/**
+ * Dataset single resource actions
+ */
 app.get('/datasets/:id', async (req: Request, res: Response) => {
   const response = await datasetService.show(req.params.id);
 
@@ -70,60 +129,17 @@ app.delete('/datasets/:id', async (req: Request, res: Response) => {
 });
 
 /**
- * Results
+ * Forecasts
  */
-app.get('/results', async (req: Request, res: Response) => {
-  const response = await resultService.index();
+
+app.get('/forecasts', async (req: Request, res: Response) => {
+  const response = await forecastService.index();
 
   res.json(response);
 });
-
-app.get('/results/:id', async (req: Request, res: Response) => {
-  const response = await resultService.show(req.params.id);
-
-  if (!response) {
-    return res.status(404).json({
-      message: 'Result not found',
-    });
-  }
-
-  res.json(response);
-});
-
-/**
- * Executions
- */
-app.get('/executions', async (req: Request, res: Response) => {
-  const response = await executionService.index();
-
-  res.json(response);
-});
-
-app.post(
-  '/executions',
-  withRequestValidator(storeExecutionRequest),
-  async (req: Request, res: Response) => {
-    const dataset = await datasetService.show(req.body.dataset_id);
-
-    if (!dataset) {
-      return res.status(404).json({
-        message: 'Dataset not found',
-      });
-    }
-    try {
-      const response = await executionService.store(req.body);
-
-      res.json(response);
-    } catch (error) {
-      res.status(500).json({ message: 'Something went wrong' });
-    }
-  },
-);
 
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {
   console.log(
     `⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`,
   );
 });
-
-

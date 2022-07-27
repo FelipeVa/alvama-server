@@ -1,11 +1,11 @@
 import { prisma } from '../utils/prisma';
-import { resultService } from './result.service';
+import { datasetResultService } from './datasetResult.service';
 import { alvamaService } from './alvama.service';
 import { CreateExecutionType } from '../types/execution.type';
 
 const service = () => {
   const index = async () => {
-    return await prisma.execution.findMany({
+    return await prisma.datasetExecution.findMany({
       orderBy: {
         created_at: 'desc',
       },
@@ -18,9 +18,9 @@ const service = () => {
 
   const store = async ({ dataset_id, name }: CreateExecutionType) => {
     const alvama = await alvamaService.store(dataset_id);
-    const result = await resultService.store(dataset_id, alvama);
+    const result = await datasetResultService.store(dataset_id, alvama);
 
-    return await prisma.execution.create({
+    return await prisma.datasetExecution.create({
       data: {
         name,
         dataset_id: parseInt(dataset_id),
@@ -32,4 +32,4 @@ const service = () => {
   return { store, index };
 };
 
-export const executionService = service();
+export const datasetExecutionService = service();

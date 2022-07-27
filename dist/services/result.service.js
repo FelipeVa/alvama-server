@@ -13,7 +13,7 @@ exports.resultService = void 0;
 const prisma_1 = require("../utils/prisma");
 const service = () => {
     const index = () => __awaiter(void 0, void 0, void 0, function* () {
-        return yield prisma_1.prisma.result.findMany({
+        return yield prisma_1.prisma.datasetResult.findMany({
             orderBy: {
                 created_at: 'desc',
             },
@@ -30,7 +30,7 @@ const service = () => {
         });
     });
     const show = (id) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield prisma_1.prisma.result.findUnique({
+        return yield prisma_1.prisma.datasetResult.findUnique({
             where: {
                 id: parseInt(id),
             },
@@ -52,7 +52,7 @@ const service = () => {
         });
     });
     const store = (datasetId, results) => __awaiter(void 0, void 0, void 0, function* () {
-        return yield prisma_1.prisma.result.create({
+        return yield prisma_1.prisma.datasetResult.create({
             data: {
                 dataset_id: parseInt(datasetId),
                 objective: results.objective,

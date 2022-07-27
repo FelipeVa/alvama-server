@@ -46,6 +46,47 @@ app.post('/datasets', (0, common_1.withRequestValidator)(requests_1.storeDataset
     const response = yield services_1.datasetService.store(req.body);
     res.json(response);
 }));
+/**
+ * Dataset Results
+ */
+app.get('/datasets/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.datasetResultService.index();
+    res.json(response);
+}));
+app.get('/datasets/results/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.datasetResultService.show(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Result not found',
+        });
+    }
+    res.json(response);
+}));
+/**
+ * Dataset Executions
+ */
+app.get('/datasets/executions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.datasetExecutionService.index();
+    res.json(response);
+}));
+app.post('/datasets/executions', (0, common_1.withRequestValidator)(requests_1.storeExecutionRequest), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const dataset = yield services_1.datasetService.show(req.body.dataset_id);
+    if (!dataset) {
+        return res.status(404).json({
+            message: 'Dataset not found',
+        });
+    }
+    try {
+        const response = yield services_1.datasetExecutionService.store(req.body);
+        res.json(response);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+}));
+/**
+ * Dataset single resource actions
+ */
 app.get('/datasets/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield services_1.datasetService.show(req.params.id);
     if (!response) {
@@ -65,42 +106,11 @@ app.delete('/datasets/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     res.json(response);
 }));
 /**
- * Results
+ * Forecasts
  */
-app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield services_1.resultService.index();
+app.get('/forecasts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastService.index();
     res.json(response);
-}));
-app.get('/results/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield services_1.resultService.show(req.params.id);
-    if (!response) {
-        return res.status(404).json({
-            message: 'Result not found',
-        });
-    }
-    res.json(response);
-}));
-/**
- * Executions
- */
-app.get('/executions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield services_1.executionService.index();
-    res.json(response);
-}));
-app.post('/executions', (0, common_1.withRequestValidator)(requests_1.storeExecutionRequest), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const dataset = yield services_1.datasetService.show(req.body.dataset_id);
-    if (!dataset) {
-        return res.status(404).json({
-            message: 'Dataset not found',
-        });
-    }
-    try {
-        const response = yield services_1.executionService.store(req.body);
-        res.json(response);
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Something went wrong' });
-    }
 }));
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`);

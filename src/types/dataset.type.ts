@@ -1,12 +1,17 @@
-import { Dataset, Bus, BusCapacity, Route } from '@prisma/client';
+import {
+  Dataset,
+  DatasetBus,
+  DatasetBusCapacity,
+  DatasetRoute,
+} from '@prisma/client';
 
-export type BusType = Bus & {
-  capacities: BusCapacity[];
+export type BusType = DatasetBus & {
+  capacities: DatasetBusCapacity[];
 };
 
-export type RouteType = Route;
+export type RouteType = DatasetRoute;
 
 export type DatasetType = Dataset & {
   buses: BusType[];
-  routes: Route[];
+  routes: DatasetRoute[];
 };

@@ -1,9 +1,9 @@
-import { Execution, Result } from '@prisma/client';
+import { DatasetExecution, DatasetResult } from '@prisma/client';
 import { DatasetType } from './dataset.type';
 
-export interface ExecutionType extends Execution {
+export interface ExecutionType extends DatasetExecution {
   dataset: DatasetType;
-  result: Result;
+  result: DatasetResult;
 }
 
 export interface CreateExecutionType extends Pick<ExecutionType, 'name'> {
