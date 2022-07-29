@@ -1,7 +1,7 @@
 import { prisma } from '../utils/prisma';
 import { datasetResultService } from './datasetResult.service';
 import { alvamaService } from './alvama.service';
-import { CreateExecutionType } from '../types/execution.type';
+import { DatasetCreateExecutionType } from '../types/execution.type';
 
 const service = () => {
   const index = async () => {
@@ -16,8 +16,8 @@ const service = () => {
     });
   };
 
-  const store = async ({ dataset_id, name }: CreateExecutionType) => {
-    const alvama = await alvamaService.store(dataset_id);
+  const store = async ({ dataset_id, name }: DatasetCreateExecutionType) => {
+    const alvama = await alvamaService.runModel(dataset_id);
     const result = await datasetResultService.store(dataset_id, alvama);
 
     return await prisma.datasetExecution.create({

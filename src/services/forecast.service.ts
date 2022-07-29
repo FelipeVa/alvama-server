@@ -1,5 +1,4 @@
 import { prisma } from '../utils/prisma';
-import { DatasetType } from '../types/dataset.type';
 import { ForecastType } from '../types/forecast.type';
 
 const service = () => {
@@ -28,7 +27,43 @@ const service = () => {
     });
   };
 
-  return { index, store };
+  const show = async (id: string) => {
+    return await prisma.forecast.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+      include: {
+        items: true,
+      },
+    });
+  };
+
+  const showForAlvama = async (id: string) => {
+    return await prisma.forecast.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+
+      select: {
+        items: {
+          select: {
+            name: true,
+            value: true,
+          },
+        },
+      },
+    });
+  };
+
+  const destroy = async (id: string) => {
+    return await prisma.forecast.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+  };
+
+  return { index, store, show, showForAlvama, destroy };
 };
 
 export const forecastService = service();

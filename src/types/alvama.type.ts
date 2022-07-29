@@ -9,3 +9,11 @@ export type AlvamaType = {
     capacity_id: string;
   }[];
 };
+
+export type ForecastType = {
+  method: string;
+  mean_squared_error: number;
+  next_period_forecast: number;
+  values: number[];
+  time: number;
+};

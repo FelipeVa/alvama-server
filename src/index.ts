@@ -1,11 +1,17 @@
 import express, { Express, Request, Response } from 'express';
 import {
-  datasetService,
   datasetExecutionService,
   datasetResultService,
+  datasetService,
+  forecastExecutionService,
+  forecastResultService,
   forecastService,
 } from './services';
-import { storeDatasetRequest, storeExecutionRequest } from './http/requests';
+import {
+  storeDatasetRequest,
+  storeExecutionRequest,
+  storeForecastExecutionRequest,
+} from './http/requests';
 import { withRequestValidator } from './utils/common';
 
 const app: Express = express();
@@ -140,6 +146,85 @@ app.get('/forecasts', async (req: Request, res: Response) => {
 
 app.post('/forecasts', async (req: Request, res: Response) => {
   const response = await forecastService.store(req.body);
+
+  res.json(response);
+});
+
+/**
+ * Forecast Executions
+ */
+app.get('/forecasts/executions', async (req: Request, res: Response) => {
+  const response = await forecastExecutionService.index();
+
+  res.json(response);
+});
+
+app.post(
+  '/forecasts/executions',
+  withRequestValidator(storeForecastExecutionRequest),
+  async (req: Request, res: Response) => {
+    const forecast = await forecastService.show(req.body.forecast_id);
+
+    if (!forecast) {
+      return res.status(404).json({
+        message: 'Forecast not found',
+      });
+    }
+    try {
+      const response = await forecastExecutionService.store(req.body);
+
+      res.json(response);
+    } catch (error) {
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  },
+);
+
+/**
+ * Dataset Results
+ */
+app.get('/forecasts/results', async (req: Request, res: Response) => {
+  const response = await forecastResultService.index();
+
+  res.json(response);
+});
+
+app.get('/forecasts/results/:id', async (req: Request, res: Response) => {
+  const response = await forecastResultService.show(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Result not found',
+    });
+  }
+
+  res.json(response);
+});
+
+/**
+ * Forecast single resource actions
+ */
+
+app.get('/forecasts/:id', async (req: Request, res: Response) => {
+  const response = await forecastService.show(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Forecast not found',
+    });
+  }
+
+  res.json(response);
+});
+
+app.delete('/forecasts/:id', async (req: Request, res: Response) => {
+  const response = await forecastService.destroy(req.params.id);
+
+  if (!response) {
+    return res.status(404).json({
+      message: 'Forecast not found',
+    });
+  }
 
   res.json(response);
 });

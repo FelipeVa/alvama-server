@@ -8,7 +8,12 @@ const service = () => {
         created_at: 'desc',
       },
       include: {
-        execution: true,
+        execution: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         result_items: {
           include: {
             bus: true,

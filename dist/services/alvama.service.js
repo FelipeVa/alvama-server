@@ -12,15 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.alvamaService = void 0;
 const common_1 = require("../utils/common");
 const dataset_service_1 = require("./dataset.service");
+const forecast_service_1 = require("./forecast.service");
 const service = () => {
-    const store = (datasetId) => __awaiter(void 0, void 0, void 0, function* () {
+    const runModel = (datasetId) => __awaiter(void 0, void 0, void 0, function* () {
         const dataset = yield dataset_service_1.datasetService.showForAlvama(datasetId);
         return yield (0, common_1.runCommand)(process.env.ALVAMA_BINARY, [
             'alvama',
             `${JSON.stringify(dataset)}`,
         ]);
     });
-    return { store };
+    const runForecast = (forecastId) => __awaiter(void 0, void 0, void 0, function* () {
+        const forecast = yield forecast_service_1.forecastService.showForAlvama(forecastId);
+        return yield (0, common_1.runCommand)(process.env.ALVAMA_BINARY, [
+            'forecast',
+            `${JSON.stringify(forecast)}`,
+        ]);
+    });
+    return { runModel, runForecast };
 };
 exports.alvamaService = service();
 //# sourceMappingURL=alvama.service.js.map

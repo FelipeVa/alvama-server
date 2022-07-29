@@ -112,6 +112,69 @@ app.get('/forecasts', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const response = yield services_1.forecastService.index();
     res.json(response);
 }));
+app.post('/forecasts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastService.store(req.body);
+    res.json(response);
+}));
+/**
+ * Forecast Executions
+ */
+app.get('/forecasts/executions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastExecutionService.index();
+    res.json(response);
+}));
+app.post('/forecasts/executions', (0, common_1.withRequestValidator)(requests_1.storeForecastExecutionRequest), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const forecast = yield services_1.forecastService.show(req.body.forecast_id);
+    if (!forecast) {
+        return res.status(404).json({
+            message: 'Forecast not found',
+        });
+    }
+    try {
+        const response = yield services_1.forecastExecutionService.store(req.body);
+        res.json(response);
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+}));
+/**
+ * Dataset Results
+ */
+app.get('/forecasts/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastResultService.index();
+    res.json(response);
+}));
+app.get('/forecasts/results/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastResultService.show(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Result not found',
+        });
+    }
+    res.json(response);
+}));
+/**
+ * Forecast single resource actions
+ */
+app.get('/forecasts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastService.show(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Forecast not found',
+        });
+    }
+    res.json(response);
+}));
+app.delete('/forecasts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const response = yield services_1.forecastService.destroy(req.params.id);
+    if (!response) {
+        return res.status(404).json({
+            message: 'Forecast not found',
+        });
+    }
+    res.json(response);
+}));
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`);
 });

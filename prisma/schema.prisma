@@ -24,7 +24,7 @@ model Dataset {
 
 model DatasetExecution {
   id         Int           @id @default(autoincrement())
-  dataset    Dataset       @relation(name: "dataset_executions", fields: [dataset_id], references: [id])
+  dataset    Dataset       @relation(name: "dataset_executions", fields: [dataset_id], references: [id], onDelete: Cascade)
   dataset_id Int
   result     DatasetResult @relation(name: "execution_result", fields: [result_id], references: [id])
   result_id  Int           @unique
@@ -36,7 +36,7 @@ model DatasetExecution {
 
 model DatasetRoute {
   id           Int                 @id @default(autoincrement())
-  dataset      Dataset             @relation(fields: [dataset_id], references: [id])
+  dataset      Dataset             @relation(fields: [dataset_id], references: [id], onDelete: Cascade)
   dataset_id   Int
   name         String
   length       Int
@@ -50,7 +50,7 @@ model DatasetRoute {
 
 model DatasetBus {
   id           Int                  @id @default(autoincrement())
-  dataset      Dataset              @relation(fields: [dataset_id], references: [id])
+  dataset      Dataset              @relation(fields: [dataset_id], references: [id], onDelete: Cascade)
   dataset_id   Int
   name         String
   cost_per_km  Float                @default(0)
@@ -63,7 +63,7 @@ model DatasetBus {
 
 model DatasetBusCapacity {
   id           Int                 @id @default(autoincrement())
-  bus          DatasetBus          @relation(fields: [bus_id], references: [id])
+  bus          DatasetBus          @relation(fields: [bus_id], references: [id], onDelete: Cascade)
   bus_id       Int
   name         String
   capacity     Int                 @default(0)
@@ -76,7 +76,7 @@ model DatasetBusCapacity {
 
 model DatasetResult {
   id           Int                 @id @default(autoincrement())
-  dataset      Dataset             @relation(name: "dataset_results", fields: [dataset_id], references: [id])
+  dataset      Dataset             @relation(name: "dataset_results", fields: [dataset_id], references: [id], onDelete: Cascade)
   dataset_id   Int
   execution    DatasetExecution?   @relation(name: "execution_result")
   result_items DatasetResultItem[]
@@ -94,7 +94,7 @@ model DatasetResultItem {
   result_id       Int
   bus             DatasetBus         @relation(name: "bus_result_items", fields: [bus_id], references: [id])
   bus_id          Int
-  route           DatasetRoute       @relation(name: "route_result_items", fields: [route_id], references: [id])
+  route           DatasetRoute       @relation(name: "route_result_items", fields: [route_id], references: [id], onDelete: Cascade)
   route_id        Int
   capacity        DatasetBusCapacity @relation(name: "bus_capacity_result_items", fields: [bus_capacity_id], references: [id])
   bus_capacity_id Int
@@ -108,7 +108,7 @@ model Forecast {
   id         Int                 @id @default(autoincrement())
   name       String
   items      ForecastItem[]
-  results    ForecastResult[]
+  results    ForecastResult[]    @relation(name: "forecast_results")
   executions ForecastExecution[] @relation(name: "forecast_executions")
   created_at DateTime            @default(now())
 
@@ -117,7 +117,7 @@ model Forecast {
 
 model ForecastItem {
   id          Int      @id @default(autoincrement())
-  forecast    Forecast @relation(fields: [forecast_id], references: [id])
+  forecast    Forecast @relation(fields: [forecast_id], references: [id], onDelete: Cascade)
   forecast_id Int
   name        String   @default("Forecast Item")
   value       Float    @default(0)
@@ -128,7 +128,7 @@ model ForecastItem {
 
 model ForecastExecution {
   id          Int            @id @default(autoincrement())
-  forecast    Forecast       @relation(name: "forecast_executions", fields: [forecast_id], references: [id])
+  forecast    Forecast       @relation(name: "forecast_executions", fields: [forecast_id], references: [id], onDelete: Cascade)
   forecast_id Int
   result      ForecastResult @relation(name: "forecast_execution_result", fields: [result_id], references: [id])
   result_id   Int            @unique
@@ -140,7 +140,7 @@ model ForecastExecution {
 
 model ForecastResult {
   id                 Int                @id @default(autoincrement())
-  forecast           Forecast           @relation(fields: [forecast_id], references: [id])
+  forecast           Forecast           @relation(name: "forecast_results", fields: [forecast_id], references: [id], onDelete: Cascade)
   forecast_id        Int
   execution          ForecastExecution? @relation(name: "forecast_execution_result")
   method             String
