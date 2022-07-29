@@ -1,4 +1,6 @@
 import { prisma } from '../utils/prisma';
+import { DatasetType } from '../types/dataset.type';
+import { ForecastType } from '../types/forecast.type';
 
 const service = () => {
   const index = async () => {
@@ -12,7 +14,21 @@ const service = () => {
     });
   };
 
-  return { index };
+  const store = async (dataset: ForecastType) => {
+    return await prisma.forecast.create({
+      data: {
+        name: dataset.name,
+        items: {
+          create: dataset.items,
+        },
+      },
+      include: {
+        items: true,
+      },
+    });
+  };
+
+  return { index, store };
 };
 
 export const forecastService = service();

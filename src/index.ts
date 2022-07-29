@@ -138,6 +138,12 @@ app.get('/forecasts', async (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.post('/forecasts', async (req: Request, res: Response) => {
+  const response = await forecastService.store(req.body);
+
+  res.json(response);
+});
+
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {
   console.log(
     `⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`,
