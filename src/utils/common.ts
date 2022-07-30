@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { ValidationChain, validationResult } from 'express-validator';
 
 export const runCommand = <T>(command: string, args: string[]): Promise<T> =>
@@ -37,3 +37,15 @@ export const withRequestValidator = (validator: ValidationChain[]) => [
   ...validator,
   validateRequestMiddleware,
 ];
+
+export const asyncHandler =
+  (
+    fn: (
+      req: Request,
+      res: Response,
+      next: NextFunction,
+    ) => Promise<express.Response>,
+  ) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    return Promise.resolve(fn(req, res, next)).catch(next);
+  };

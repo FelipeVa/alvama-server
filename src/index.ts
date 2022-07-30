@@ -1,18 +1,18 @@
 import express, { Express, Request, Response } from 'express';
 import {
-  datasetExecutionService,
-  datasetResultService,
-  datasetService,
-  forecastExecutionService,
-  forecastResultService,
-  forecastService,
-} from './services';
-import {
   storeDatasetRequest,
   storeExecutionRequest,
   storeForecastExecutionRequest,
 } from './http/requests';
-import { withRequestValidator } from './utils/common';
+import {
+  datasetController,
+  datasetExecutionController,
+  datasetResultController,
+  forecastController,
+  forecastExecutionController,
+  forecastResultController,
+} from './http/controllers';
+import { asyncHandler, withRequestValidator } from './utils/common';
 
 const app: Express = express();
 const cors = require('cors');
@@ -40,195 +40,79 @@ app.get('/', (req: Request, res: Response) => {
 /**
  * Dataset
  */
-app.get('/datasets', async (req: Request, res: Response) => {
-  const response = await datasetService.index();
-
-  res.json(response);
-});
+app.get('/datasets', datasetController.index);
 
 app.post(
   '/datasets',
   withRequestValidator(storeDatasetRequest),
-  async (req: Request, res: Response) => {
-    const response = await datasetService.store(req.body);
-
-    res.json(response);
-  },
+  datasetController.store,
 );
 
 /**
  * Dataset Results
  */
-app.get('/datasets/results', async (req: Request, res: Response) => {
-  const response = await datasetResultService.index();
-
-  res.json(response);
-});
-
-app.get('/datasets/results/:id', async (req: Request, res: Response) => {
-  const response = await datasetResultService.show(req.params.id);
-
-  if (!response) {
-    return res.status(404).json({
-      message: 'Result not found',
-    });
-  }
-
-  res.json(response);
-});
+app.get('/datasets/results', datasetResultController.index);
+app.get('/datasets/results/:id', datasetResultController.show);
 
 /**
  * Dataset Executions
  */
-app.get('/datasets/executions', async (req: Request, res: Response) => {
-  const response = await datasetExecutionService.index();
-
-  res.json(response);
-});
-
+app.get('/datasets/executions', datasetExecutionController.index);
 app.post(
   '/datasets/executions',
   withRequestValidator(storeExecutionRequest),
-  async (req: Request, res: Response) => {
-    const dataset = await datasetService.show(req.body.dataset_id);
-
-    if (!dataset) {
-      return res.status(404).json({
-        message: 'Dataset not found',
-      });
-    }
-    try {
-      const response = await datasetExecutionService.store(req.body);
-
-      res.json(response);
-    } catch (error) {
-      res.status(500).json({ message: 'Something went wrong' });
-    }
-  },
+  datasetExecutionController.store,
 );
 
 /**
  * Dataset single resource actions
  */
-app.get('/datasets/:id', async (req: Request, res: Response) => {
-  const response = await datasetService.show(req.params.id);
-
-  if (!response) {
-    return res.status(404).json({
-      message: 'Dataset not found',
-    });
-  }
-
-  res.json(response);
-});
-
-app.delete('/datasets/:id', async (req: Request, res: Response) => {
-  const response = await datasetService.destroy(req.params.id);
-
-  if (!response) {
-    return res.status(404).json({
-      message: 'Dataset not found',
-    });
-  }
-
-  res.json(response);
-});
+app.get('/datasets/:id', datasetController.show);
+app.delete('/datasets/:id', asyncHandler(datasetController.destroy));
 
 /**
  * Forecasts
  */
 
-app.get('/forecasts', async (req: Request, res: Response) => {
-  const response = await forecastService.index();
-
-  res.json(response);
-});
-
-app.post('/forecasts', async (req: Request, res: Response) => {
-  const response = await forecastService.store(req.body);
-
-  res.json(response);
-});
+app.get('/forecasts', forecastController.index);
+app.post('/forecasts', forecastController.store);
 
 /**
  * Forecast Executions
  */
-app.get('/forecasts/executions', async (req: Request, res: Response) => {
-  const response = await forecastExecutionService.index();
-
-  res.json(response);
-});
+app.get('/forecasts/executions', forecastExecutionController.index);
 
 app.post(
   '/forecasts/executions',
   withRequestValidator(storeForecastExecutionRequest),
-  async (req: Request, res: Response) => {
-    const forecast = await forecastService.show(req.body.forecast_id);
-
-    if (!forecast) {
-      return res.status(404).json({
-        message: 'Forecast not found',
-      });
-    }
-    try {
-      const response = await forecastExecutionService.store(req.body);
-
-      res.json(response);
-    } catch (error) {
-      res.status(500).json({ message: 'Something went wrong' });
-    }
-  },
+  forecastExecutionController.store,
 );
 
 /**
  * Dataset Results
  */
-app.get('/forecasts/results', async (req: Request, res: Response) => {
-  const response = await forecastResultService.index();
-
-  res.json(response);
-});
-
-app.get('/forecasts/results/:id', async (req: Request, res: Response) => {
-  const response = await forecastResultService.show(req.params.id);
-
-  if (!response) {
-    return res.status(404).json({
-      message: 'Result not found',
-    });
-  }
-
-  res.json(response);
-});
+app.get('/forecasts/results', forecastResultController.index);
+app.get('/forecasts/results/:id', forecastResultController.show);
 
 /**
  * Forecast single resource actions
  */
 
-app.get('/forecasts/:id', async (req: Request, res: Response) => {
-  const response = await forecastService.show(req.params.id);
+app.get('/forecasts/:id', forecastController.show);
+app.delete('/forecasts/:id', forecastController.destroy);
 
-  if (!response) {
-    return res.status(404).json({
-      message: 'Forecast not found',
-    });
-  }
-
-  res.json(response);
+/**
+ * Error handler
+ */
+app.use((err: any, req: Request, res: Response) => {
+  res.status(500).json({
+    message: `Something went wrong: ${err.message}`,
+  });
 });
 
-app.delete('/forecasts/:id', async (req: Request, res: Response) => {
-  const response = await forecastService.destroy(req.params.id);
-
-  if (!response) {
-    return res.status(404).json({
-      message: 'Forecast not found',
-    });
-  }
-
-  res.json(response);
-});
-
+/**
+ * Starting server
+ */
 app.listen(process.env.EXPRESS_SERVER_PORT, () => {
   console.log(
     `⚡️[server]: Server is running at http://localhost:${process.env.EXPRESS_SERVER_PORT}`,

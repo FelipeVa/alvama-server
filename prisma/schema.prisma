@@ -39,9 +39,9 @@ model DatasetRoute {
   dataset      Dataset             @relation(fields: [dataset_id], references: [id], onDelete: Cascade)
   dataset_id   Int
   name         String
-  length       Int
+  length       Float
   demand       Int
-  cycle_time   Int
+  cycle_time   Float
   result_items DatasetResultItem[] @relation(name: "route_result_items")
   created_at   DateTime            @default(now())
 
