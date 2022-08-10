@@ -14,6 +14,13 @@ const service = () => {
             name: true,
           },
         },
+        result_items: {
+          select: {
+            method: true,
+            value: true,
+            selected: true,
+          },
+        },
       },
     });
   };
@@ -25,6 +32,7 @@ const service = () => {
       },
       include: {
         execution: true,
+        result_items: true,
         forecast: {
           include: {
             items: true,
@@ -38,10 +46,18 @@ const service = () => {
     return await prisma.forecastResult.create({
       data: {
         forecast_id: parseInt(forecast_id),
-        method: results.method,
         time: results.time,
-        value: results.next_period_forecast,
-        mean_squared_error: results.mean_squared_error,
+        result_items: {
+          create: results.forecasts.map(result_item => ({
+            method: result_item.method,
+            value: result_item.next_period_forecast,
+            mean_squared_error: result_item.mean_squared_error,
+            selected: result_item.selected,
+          })),
+        },
+      },
+      include: {
+        result_items: true,
       },
     });
   };

@@ -5,3 +5,4 @@ export { datasetResultService } from './datasetResult.service';
 export { forecastService } from './forecast.service';
 export { forecastExecutionService } from './forecastExecution.service';
 export { forecastResultService } from './forecastResult.service';
+export { dashboardService } from './dashboard.service';

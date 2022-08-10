@@ -10,10 +10,15 @@ export type AlvamaType = {
   }[];
 };
 
-export type ForecastType = {
+export type ForecastItemType = {
   method: string;
   mean_squared_error: number;
   next_period_forecast: number;
   values: number[];
+  selected: boolean;
+};
+
+export type ForecastType = {
   time: number;
+  forecasts: ForecastItemType[];
 };

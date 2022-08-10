@@ -90,13 +90,13 @@ model DatasetResult {
 
 model DatasetResultItem {
   id              Int                @id @default(autoincrement())
-  result          DatasetResult      @relation(fields: [result_id], references: [id])
+  result          DatasetResult      @relation(fields: [result_id], references: [id], onDelete: Cascade)
   result_id       Int
-  bus             DatasetBus         @relation(name: "bus_result_items", fields: [bus_id], references: [id])
+  bus             DatasetBus         @relation(name: "bus_result_items", fields: [bus_id], references: [id], onDelete: Cascade)
   bus_id          Int
   route           DatasetRoute       @relation(name: "route_result_items", fields: [route_id], references: [id], onDelete: Cascade)
   route_id        Int
-  capacity        DatasetBusCapacity @relation(name: "bus_capacity_result_items", fields: [bus_capacity_id], references: [id])
+  capacity        DatasetBusCapacity @relation(name: "bus_capacity_result_items", fields: [bus_capacity_id], references: [id], onDelete: Cascade)
   bus_capacity_id Int
   value           String             @default("0")
   created_at      DateTime           @default(now())
@@ -139,17 +139,28 @@ model ForecastExecution {
 }
 
 model ForecastResult {
-  id                 Int                @id @default(autoincrement())
-  forecast           Forecast           @relation(name: "forecast_results", fields: [forecast_id], references: [id], onDelete: Cascade)
-  forecast_id        Int
-  execution          ForecastExecution? @relation(name: "forecast_execution_result")
-  method             String
-  value              Float              @default(0)
-  mean_squared_error Float              @default(0)
-  time               Float              @default(0)
-  created_at         DateTime           @default(now())
+  id           Int                  @id @default(autoincrement())
+  forecast     Forecast             @relation(name: "forecast_results", fields: [forecast_id], references: [id], onDelete: Cascade)
+  forecast_id  Int
+  time         Float                @default(0)
+  execution    ForecastExecution?   @relation(name: "forecast_execution_result")
+  result_items ForecastResultItem[]
+  created_at   DateTime             @default(now())
 
   @@map("forecast_results")
+}
+
+model ForecastResultItem {
+  id                 Int            @id @default(autoincrement())
+  result             ForecastResult @relation(fields: [result_id], references: [id], onDelete: Cascade)
+  result_id          Int
+  selected           Boolean        @default(false)
+  method             String
+  value              Float          @default(0)
+  mean_squared_error Float          @default(0)
+  created_at         DateTime       @default(now())
+
+  @@map("forecast_result_items")
 }
 
 // De los cuales el % de las citaciones realizadas por los autores, corresponden a X, Y,Z e ir concluyendo

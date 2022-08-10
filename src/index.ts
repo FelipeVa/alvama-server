@@ -5,6 +5,7 @@ import {
   storeForecastExecutionRequest,
 } from './http/requests';
 import {
+  dashboardController,
   datasetController,
   datasetExecutionController,
   datasetResultController,
@@ -36,6 +37,19 @@ app.use(express.urlencoded({ extended: false, limit: '1000kb' }));
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
+
+/**
+ * Dashboard
+ */
+app.get(
+  '/dashboard/stats/dataset-result/:id',
+  dashboardController.showDatasetResultStat,
+);
+
+app.get(
+  '/dashboard/stats/last-ten-results',
+  dashboardController.showLastTenResults,
+);
 
 /**
  * Dataset
