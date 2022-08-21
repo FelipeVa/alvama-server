@@ -1,4 +1,5 @@
 import { prisma } from '../utils/prisma';
+import { DatasetResult } from '@prisma/client';
 
 const service = () => {
   const showLastTenResults = async () => {
@@ -83,7 +84,8 @@ const service = () => {
       },
     });
 
-    const { dataset, result_items } = datasetResult;
+    const dataset = datasetResult.dataset;
+    const result_items = datasetResult.result_items;
 
     const datasetAmountOfBuses = dataset.buses
       .map(bus => bus.capacities)
