@@ -9,16 +9,16 @@ export const dashboardController = {
   },
 
   showDatasetResultStat: async (req: Request, res: Response) => {
-    const response = await dashboardService.showDatasetResultStat(
-      req.params.id,
-    );
+    try {
+      const response = await dashboardService.showDatasetResultStat(
+        req.params.id,
+      );
 
-    if (!response) {
-      return res.status(404).json({
+      res.json(response);
+    } catch (error) {
+      res.status(404).json({
         message: 'Dataset result not found',
       });
     }
-
-    res.json(response);
   },
 };

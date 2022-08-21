@@ -1,5 +1,4 @@
 import { prisma } from '../utils/prisma';
-import { DatasetResult } from '@prisma/client';
 
 const service = () => {
   const showLastTenResults = async () => {
