@@ -10,8 +10,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            Int               @id @default(autoincrement())
+  name          String
+  email         String            @unique
+  password      String
+  access_tokens UserAccessToken[]
+  datasets      Dataset[]
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
+  Forecast      Forecast[]
+
+  @@map("users")
+}
+
+model UserAccessToken {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  name       String
+  token      String   @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("user_access_tokens")
+}
+
 model Dataset {
   id         Int                @id @default(autoincrement())
+  user       User               @relation(fields: [user_id], references: [id])
+  user_id    Int                @default(1)
   name       String
   routes     DatasetRoute[]
   buses      DatasetBus[]
@@ -106,6 +134,8 @@ model DatasetResultItem {
 
 model Forecast {
   id         Int                 @id @default(autoincrement())
+  user       User                @relation(fields: [user_id], references: [id])
+  user_id    Int                 @default(1)
   name       String
   items      ForecastItem[]
   results    ForecastResult[]    @relation(name: "forecast_results")

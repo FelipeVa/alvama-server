@@ -4,8 +4,13 @@ import { ForecastCreateExecutionType } from '../types/execution.type';
 import { forecastResultService } from './forecastResult.service';
 
 const service = () => {
-  const index = async () => {
+  const index = async (userId: number) => {
     return await prisma.forecastExecution.findMany({
+      where: {
+        forecast: {
+          user_id: userId,
+        },
+      },
       orderBy: {
         created_at: 'desc',
       },

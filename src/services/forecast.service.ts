@@ -2,8 +2,11 @@ import { prisma } from '../utils/prisma';
 import { ForecastType } from '../types/forecast.type';
 
 const service = () => {
-  const index = async () => {
+  const index = async (userId: number) => {
     return await prisma.forecast.findMany({
+      where: {
+        user_id: userId,
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -13,9 +16,10 @@ const service = () => {
     });
   };
 
-  const store = async (dataset: ForecastType) => {
+  const store = async (dataset: ForecastType, userId: number) => {
     return await prisma.forecast.create({
       data: {
+        user_id: userId,
         name: dataset.name,
         items: {
           create: dataset.items,
@@ -27,10 +31,11 @@ const service = () => {
     });
   };
 
-  const show = async (id: string) => {
-    return await prisma.forecast.findUnique({
+  const show = async (id: string, userId: number) => {
+    return await prisma.forecast.findFirst({
       where: {
         id: parseInt(id),
+        user_id: userId,
       },
       include: {
         items: true,
@@ -55,10 +60,18 @@ const service = () => {
     });
   };
 
-  const destroy = async (id: string) => {
-    return await prisma.forecast.delete({
+  const destroy = async (id: string, userId: number) => {
+    await prisma.forecast.findFirstOrThrow({
       where: {
         id: parseInt(id),
+        user_id: userId,
+      },
+    });
+
+    return await prisma.forecast.deleteMany({
+      where: {
+        id: parseInt(id),
+        user_id: userId,
       },
     });
   };

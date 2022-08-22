@@ -1,8 +1,13 @@
 import { prisma } from '../utils/prisma';
 
 const service = () => {
-  const showLastTenResults = async () => {
+  const showLastTenResults = async (userId: number) => {
     const datasetResults = await prisma.datasetResult.findMany({
+      where: {
+        dataset: {
+          user_id: userId,
+        },
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -25,6 +30,11 @@ const service = () => {
     });
 
     const forecastResults = await prisma.forecastResult.findMany({
+      where: {
+        forecast: {
+          user_id: userId,
+        },
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -56,10 +66,17 @@ const service = () => {
     };
   };
 
-  const showDatasetResultStat = async (datasetResultId: string) => {
-    const datasetResult = await prisma.datasetResult.findUnique({
+  const showDatasetResultStat = async (
+    datasetResultId: string,
+    userId: number,
+  ) => {
+    const datasetResult = await prisma.datasetResult.findFirst({
       where: {
         id: parseInt(datasetResultId),
+
+        dataset: {
+          user_id: userId,
+        },
       },
 
       include: {
