@@ -1,27 +1,34 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { forecastExecutionService, forecastService } from '../../services';
+import createError from 'http-errors';
 
 export const forecastExecutionController = {
   index: async (req: Request, res: Response) => {
-    const response = await forecastExecutionService.index();
+    const response = await forecastExecutionService.index(req.auth.user.id);
 
     res.json(response);
   },
 
-  store: async (req: Request, res: Response) => {
-    const forecast = await forecastService.show(req.body.forecast_id);
+  store: async (req: Request, res: Response, next: NextFunction) => {
+    const forecast = await forecastService.show(
+      req.body.forecast_id,
+      req.auth.user.id,
+    );
 
     if (!forecast) {
-      return res.status(404).json({
-        message: 'Forecast not found',
-      });
+      return next(new createError.NotFound('Forecast not found'));
     }
+
     try {
       const response = await forecastExecutionService.store(req.body);
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({ message: 'Something went wrong' });
+      next(
+        new createError.InternalServerError(
+          'Something went wrong while executing the forecast',
+        ),
+      );
     }
   },
 };

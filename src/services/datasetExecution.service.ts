@@ -4,8 +4,13 @@ import { alvamaService } from './alvama.service';
 import { DatasetCreateExecutionType } from '../types/execution.type';
 
 const service = () => {
-  const index = async () => {
+  const index = async (userId: number) => {
     return await prisma.datasetExecution.findMany({
+      where: {
+        dataset: {
+          user_id: userId,
+        },
+      },
       orderBy: {
         created_at: 'desc',
       },

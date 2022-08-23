@@ -1,10 +1,11 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import {
   storeDatasetRequest,
   storeExecutionRequest,
   storeForecastExecutionRequest,
 } from './http/requests';
 import {
+  authController,
   dashboardController,
   datasetController,
   datasetExecutionController,
@@ -13,11 +14,14 @@ import {
   forecastExecutionController,
   forecastResultController,
 } from './http/controllers';
-import { asyncHandler, withRequestValidator } from './utils/common';
+import { asyncHandler, withRequestValidatorMiddleware } from './utils/common';
+import { authMiddleware, guestMiddleware } from './http/middlewares';
+import { loginRequest } from './http/requests/login.request';
 
 const app: Express = express();
 const cors = require('cors');
 const dotenv = require('dotenv');
+const createError = require('http-errors');
 
 /**
  * Loading environment variables from .env file
@@ -34,13 +38,14 @@ app.use(express.urlencoded({ extended: false, limit: '1000kb' }));
 /**
  * App routes
  */
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+app.get('/', guestMiddleware, (req: Request, res: Response) => {
+  res.send(`Express + TypeScript Serves`);
 });
 
 /**
  * Dashboard
  */
+app.use('/dashboard', authMiddleware);
 app.get(
   '/dashboard/stats/dataset-result/:id',
   dashboardController.showDatasetResultStat,
@@ -54,11 +59,12 @@ app.get(
 /**
  * Dataset
  */
+app.use('/datasets', authMiddleware);
 app.get('/datasets', datasetController.index);
 
 app.post(
   '/datasets',
-  withRequestValidator(storeDatasetRequest),
+  withRequestValidatorMiddleware(storeDatasetRequest),
   datasetController.store,
 );
 
@@ -74,7 +80,7 @@ app.get('/datasets/results/:id', datasetResultController.show);
 app.get('/datasets/executions', datasetExecutionController.index);
 app.post(
   '/datasets/executions',
-  withRequestValidator(storeExecutionRequest),
+  withRequestValidatorMiddleware(storeExecutionRequest),
   datasetExecutionController.store,
 );
 
@@ -87,7 +93,7 @@ app.delete('/datasets/:id', asyncHandler(datasetController.destroy));
 /**
  * Forecasts
  */
-
+app.use('/forecasts', authMiddleware);
 app.get('/forecasts', forecastController.index);
 app.post('/forecasts', forecastController.store);
 
@@ -98,7 +104,7 @@ app.get('/forecasts/executions', forecastExecutionController.index);
 
 app.post(
   '/forecasts/executions',
-  withRequestValidator(storeForecastExecutionRequest),
+  withRequestValidatorMiddleware(storeForecastExecutionRequest),
   forecastExecutionController.store,
 );
 
@@ -116,13 +122,38 @@ app.get('/forecasts/:id', forecastController.show);
 app.delete('/forecasts/:id', forecastController.destroy);
 
 /**
+ * Authentication
+ */
+app.get('/auth/me', authMiddleware, authController.me);
+app.delete('/auth/logout', authMiddleware, authController.logout);
+app.post(
+  '/auth/login',
+  guestMiddleware,
+  withRequestValidatorMiddleware(loginRequest),
+  authController.login,
+);
+
+/**
  * Error handler
  */
-app.use((err: any, req: Request, res: Response) => {
-  res.status(500).json({
-    message: `Something went wrong: ${err.message}`,
-  });
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new createError.NotFound('Route not Found'));
 });
+
+app.use(
+  (
+    err: { message: any; status: number },
+    req: Request,
+    res: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _next: NextFunction,
+  ) => {
+    res.status(err.status || 500).json({
+      status: err.status || 500,
+      message: err.message || 'Something went wrong',
+    });
+  },
+);
 
 /**
  * Starting server

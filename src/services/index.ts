@@ -6,3 +6,4 @@ export { forecastService } from './forecast.service';
 export { forecastExecutionService } from './forecastExecution.service';
 export { forecastResultService } from './forecastResult.service';
 export { dashboardService } from './dashboard.service';
+export { authService } from './auth.service';

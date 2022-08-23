@@ -11,6 +11,7 @@ declare global {
       PYTHON_VENV_PATH: string;
       PYTHON_ENTRY_POINT: string;
       ALVAMA_BINARY: string;
+      ACCESS_TOKEN_SECRET: string;
     }
   }
 }

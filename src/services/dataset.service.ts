@@ -2,8 +2,11 @@ import { prisma } from '../utils/prisma';
 import { DatasetType } from '../types/dataset.type';
 
 const service = () => {
-  const index = async () => {
+  const index = async (userId: number) => {
     return await prisma.dataset.findMany({
+      where: {
+        user_id: userId,
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -18,9 +21,10 @@ const service = () => {
     });
   };
 
-  const store = async (dataset: DatasetType) => {
+  const store = async (dataset: DatasetType, userId: number) => {
     return await prisma.dataset.create({
       data: {
+        user_id: userId,
         name: dataset.name,
         routes: {
           create: dataset.routes,
@@ -45,18 +49,27 @@ const service = () => {
     });
   };
 
-  const destroy = async (id: string) => {
-    return await prisma.dataset.delete({
+  const destroy = async (id: string, userId: number) => {
+    await prisma.dataset.findFirstOrThrow({
       where: {
         id: parseInt(id),
+        user_id: userId,
+      },
+    });
+
+    return await prisma.dataset.deleteMany({
+      where: {
+        id: parseInt(id),
+        user_id: userId,
       },
     });
   };
 
-  const show = async (id: string) => {
-    return await prisma.dataset.findUnique({
+  const show = async (id: string, userId: number) => {
+    return await prisma.dataset.findFirst({
       where: {
         id: parseInt(id),
+        user_id: userId,
       },
       include: {
         routes: true,

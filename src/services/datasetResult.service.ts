@@ -2,8 +2,13 @@ import { prisma } from '../utils/prisma';
 import { AlvamaType } from '../types/alvama.type';
 
 const service = () => {
-  const index = async () => {
+  const index = async (userId: number) => {
     return await prisma.datasetResult.findMany({
+      where: {
+        dataset: {
+          user_id: userId,
+        },
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -25,10 +30,13 @@ const service = () => {
     });
   };
 
-  const show = async (id: string) => {
-    return await prisma.datasetResult.findUnique({
+  const show = async (id: string, userId: number) => {
+    return await prisma.datasetResult.findFirst({
       where: {
         id: parseInt(id),
+        dataset: {
+          user_id: userId,
+        },
       },
       include: {
         execution: true,

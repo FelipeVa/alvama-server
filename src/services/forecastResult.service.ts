@@ -2,8 +2,13 @@ import { prisma } from '../utils/prisma';
 import { ForecastType } from '../types/alvama.type';
 
 const service = () => {
-  const index = async () => {
+  const index = async (userId: number) => {
     return await prisma.forecastResult.findMany({
+      where: {
+        forecast: {
+          user_id: userId,
+        },
+      },
       orderBy: {
         created_at: 'desc',
       },
@@ -25,10 +30,13 @@ const service = () => {
     });
   };
 
-  const show = async (id: string) => {
-    return await prisma.forecastResult.findUnique({
+  const show = async (id: string, userId: number) => {
+    return await prisma.forecastResult.findFirst({
       where: {
         id: parseInt(id),
+        forecast: {
+          user_id: userId,
+        },
       },
       include: {
         execution: true,
