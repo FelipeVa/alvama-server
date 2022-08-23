@@ -25,7 +25,9 @@ export const authController = {
 
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
-      await req.auth.user.revokeAccessToken(req.body.token);
+      await req.auth.user.revokeAccessToken(
+        req.headers.authorization.split(' ')[1],
+      );
 
       res.json({
         message: 'Logged out successfully',
