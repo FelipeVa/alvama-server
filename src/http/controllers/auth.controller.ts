@@ -18,4 +18,20 @@ export const authController = {
       next(createError(error.statusCode, error.message));
     }
   },
+
+  me(req: Request, res: Response) {
+    res.json(req.auth.user);
+  },
+
+  async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      await req.auth.user.revokeAccessToken(req.body.token);
+
+      res.json({
+        message: 'Logged out successfully',
+      });
+    } catch (error) {
+      next(new createError.NotFound('Token not found'));
+    }
+  },
 };

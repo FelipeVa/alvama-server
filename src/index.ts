@@ -124,10 +124,8 @@ app.delete('/forecasts/:id', forecastController.destroy);
 /**
  * Authentication
  */
-app.get('/auth', authMiddleware, (req: Request, res: Response) => {
-  res.json(req.auth);
-});
-
+app.get('/auth/me', authMiddleware, authController.me);
+app.delete('/auth/logout', authMiddleware, authController.logout);
 app.post(
   '/auth/login',
   guestMiddleware,
@@ -150,13 +148,10 @@ app.use(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _next: NextFunction,
   ) => {
-    res
-      .status(err.status || 500)
-      .json({
-        status: err.status || 500,
-        message: err.message || 'Something went wrong',
-      })
-      .end();
+    res.status(err.status || 500).json({
+      status: err.status || 500,
+      message: err.message || 'Something went wrong',
+    });
   },
 );
 
