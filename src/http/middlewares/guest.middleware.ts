@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { User } from '../../classes/user.class';
 
 const createError = require('http-errors');
-import { jwt } from '../../utils/jwt';
 
 export const guestMiddleware = async (
   req: Request,
@@ -12,11 +12,11 @@ export const guestMiddleware = async (
     const token = req.headers.authorization.split(' ')[1];
 
     if (token) {
-      const payload = await jwt.verifyToken(token);
+      const user = await User.fromJwt(token);
 
-      if (payload) {
-        return next(new createError.Unauthorized('Already logged in'));
-      }
+      await user.verifyAccessToken(token);
+
+      return next(new createError.Unauthorized('Already logged in'));
     }
 
     next();

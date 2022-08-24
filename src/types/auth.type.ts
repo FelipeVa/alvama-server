@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, UserAccessToken } from '@prisma/client';
 
 export type LoginType = {
   email: string;
@@ -6,3 +6,4 @@ export type LoginType = {
 };
 
 export type UserType = User;
+export type UserAccessTokenType = UserAccessToken;

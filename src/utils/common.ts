@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import express, { NextFunction, Request, Response } from 'express';
 import { ValidationChain, validationResult } from 'express-validator';
+import { Model } from '../classes/model.class';
 const createError = require('http-errors');
 
 export const runCommand = <T>(command: string, args: string[]): Promise<T> =>
