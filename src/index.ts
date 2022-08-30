@@ -3,6 +3,7 @@ import {
   storeDatasetRequest,
   storeExecutionRequest,
   storeForecastExecutionRequest,
+  storeForecastRequest,
 } from './http/requests';
 import {
   authController,
@@ -95,7 +96,11 @@ app.delete('/datasets/:id', asyncHandler(datasetController.destroy));
  */
 app.use('/forecasts', authMiddleware);
 app.get('/forecasts', forecastController.index);
-app.post('/forecasts', forecastController.store);
+app.post(
+  '/forecasts',
+  withRequestValidatorMiddleware(storeForecastRequest),
+  forecastController.store,
+);
 
 /**
  * Forecast Executions

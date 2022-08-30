@@ -16,13 +16,13 @@ const service = () => {
     });
   };
 
-  const store = async (dataset: ForecastType, userId: number) => {
+  const store = async (forecast: ForecastType, userId: number) => {
     return await prisma.forecast.create({
       data: {
         user_id: userId,
-        name: dataset.name,
+        name: forecast.name,
         items: {
-          create: dataset.items,
+          create: forecast.items,
         },
       },
       include: {
