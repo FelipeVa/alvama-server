@@ -192,5 +192,3 @@ model ForecastResultItem {
 
   @@map("forecast_result_items")
 }
-
-// De los cuales el % de las citaciones realizadas por los autores, corresponden a X, Y,Z e ir concluyendo
